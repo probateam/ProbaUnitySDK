@@ -17,7 +17,6 @@ namespace Proba.Scripts.Editor
 
         #endregion
 
-
         /// <summary>Opens the events window.</summary>
         [MenuItem("Proba/Event Viewer")]
         private static void OpenEventsWindow()

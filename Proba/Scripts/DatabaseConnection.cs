@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Mono.Data.Sqlite;
 using System.Data;
+using UnityEditor;
 
 namespace Proba.Scripts
 {
@@ -19,9 +20,16 @@ namespace Proba.Scripts
 
         public static void InitialConnectionString()
         {
+#if UNITY_EDITOR
+
+#endif
+
             if (string.IsNullOrEmpty(_connectionString))
 #if UNITY_EDITOR
-                _connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/.EditorDatabase.s3db";
+                _connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/EditorDatabase.s3db";
+            Debug.Log(AssetDatabase.RenameAsset(_connectionString, ".EditorDatabase"));
+            //_connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/.EditorDatabase.s3db";
+
 #else
                 _connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/ProbaDatabase.s3db";
 #endif
