@@ -1,0 +1,16 @@
+{
+  "name": "com.pnm.proba",
+  "displayName": "Proba",
+  "description": "Proba Game Analytic",
+  "version": "0.1.0",
+  "unity": "2018.4",
+  "license": "",
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Sample Scene",
+      "description": "Proba Sample Scene",
+      "path": "Samples~/Demo"
+    }
+  ]
+}
