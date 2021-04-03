@@ -28,7 +28,7 @@ namespace Proba.Scripts.Editor
         [MenuItem("Proba/Open Git")]
         private static void OpenGitPage()
         {
-            Application.OpenURL("https://github.com/mghasemi23/Proba");
+            Application.OpenURL("https://github.com/probateam/ProbaUnitySDK");
         }
 
 
