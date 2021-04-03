@@ -62,10 +62,12 @@ namespace Proba.Scripts.Editor
                 AssetDatabase.SaveAssets();
             }
 
-            if (GUILayout.Button("Reset First Session"))
+            if (GUILayout.Button("Reset Device Session"))
             {
                 PlayerPrefs.SetString("ProbaSessionCount", "");
                 PlayerPrefs.SetString("ProbaFirstSessionTime", "");
+                PlayerPrefs.SetInt("ProbaHasOpenSession", 0);
+                PlayerPrefs.SetString("ProbaUserID", "");
             }
 
 

@@ -81,13 +81,11 @@ namespace Proba.Scripts
 
         internal async Task<(bool success, HttpStatusCode statusCode, CreateSessionResponseModel sessionResponse)> SendStartSessionAsync(StartSessionViewModel startSessionViewModel)
         {
-            Debug.Log("start: " + JsonConvert.SerializeObject(startSessionViewModel));
             try
             {
                 var (success, statusCode, content) = await PostJsonRequestAsync($"{BaseURL}/{APIVersion}/Events/SessionStart/{PublicKey}", JsonConvert.SerializeObject(startSessionViewModel), CancellationTokenSource);
                 if (success)
                 {
-                    Debug.Log("result: " + content);
                     var result = JsonConvert.DeserializeObject<CreateSessionResponseModel>(content);
                     return (success, statusCode, result);
                 }
@@ -103,7 +101,6 @@ namespace Proba.Scripts
 
         internal async Task<(bool sucess, HttpStatusCode statusCode)> SendEndSessionAsync(EndSessionViewModel endSessionViewModel)
         {
-            Debug.Log("end: " + JsonConvert.SerializeObject(endSessionViewModel));
             try
             {
                 var (success, statusCode, content) = await PostJsonRequestAsync($"{BaseURL}/{APIVersion}/Events/SessionEnd/{PublicKey}", JsonConvert.SerializeObject(endSessionViewModel), CancellationTokenSource);
