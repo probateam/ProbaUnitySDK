@@ -6,22 +6,21 @@ namespace Proba.Scripts.SharedClasses
 {
     internal class EndSessionViewModel
     {
-        public string UserId; //server
-        public string SessionId; //server
+        public string UserId; 
+        public string SessionId; 
 
-        public long ClientTs; //end time
-        public long SessionLength; //daghightar age pause shod
+        public long ClientTs; 
+        public long SessionLength; 
 
-        public string OS; //
-        public string Location; //server
+        public string OS; 
+        public string Location; 
 
         public bool Error;
 
         public string ErrorData;
         public List<LogModel> Logs { get; set; }
 
-        public double Battery; //end session
-        //session flag
+        public double Battery;
 
         internal EndSessionViewModel(string userID, string sessionId)
         {
@@ -44,7 +43,6 @@ namespace Proba.Scripts.SharedClasses
             Battery = SystemInfo.batteryLevel;
             if (Battery < 0)
                 Battery = 0;
-            //Broker.EndSessionCreated(this);
         }
     }
 }

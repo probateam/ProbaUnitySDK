@@ -4,10 +4,11 @@ namespace Proba.Scripts.Client
 {
     internal class RegisterResponseViewModel
     {
-        public string userId;
-        public string progress;
-        public string configurations;
-        public string userName;
+        public string UserId;
+        public string Progress;
+        public string Configurations;
+        public string UserName;
         public string AbTest;
+        public bool ProgressionStatus;
     }
 }

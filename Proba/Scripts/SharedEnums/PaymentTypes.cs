@@ -2,12 +2,12 @@
 {
     public enum PaymentTypes
     {
-        Purchase, //pole vagheii ya pool ingame
-        WatchAds, //
-        Promote, //facebook ,twitter
-        Reward, //
-        Gift, //
-        Exchange, //
-        Unkown //
+        Purchase, 
+        WatchAds, 
+        Promote, 
+        Reward, 
+        Gift, 
+        Exchange, 
+        Unkown 
     }
 }

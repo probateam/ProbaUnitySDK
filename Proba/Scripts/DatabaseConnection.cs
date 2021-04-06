@@ -17,13 +17,11 @@ namespace Proba.Scripts
         #endregion
 
 
-
         public static void InitialConnectionString()
         {
             if (string.IsNullOrEmpty(_connectionString))
 #if UNITY_EDITOR
                 _connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/.EditorDatabase.s3db";
-
 #else
                 _connectionString = "URI=file:" + Application.dataPath + "/Proba/DataBase/ProbaDatabase.s3db";
 #endif

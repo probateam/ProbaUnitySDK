@@ -4,9 +4,7 @@ namespace Proba.Scripts.SharedClasses
 {
     internal class ContentViewEventViewModel : BaseEventDataViewModel
     {
-        public string ContentName; //esme scene
-        //age hame bashe 
-        //age na method seda mikone
+        public string ContentName;
 
         internal ContentViewEventViewModel(string contentName)
         {

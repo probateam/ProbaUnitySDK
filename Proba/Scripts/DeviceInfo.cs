@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Proba.Scripts.Configuration;
 using Proba.Scripts.SharedClasses;
 using UnityEngine;
@@ -49,7 +48,8 @@ namespace Proba.Scripts
             eventData.Proba_GCID = string.Empty;
 
             eventData.UserId = !string.IsNullOrEmpty(PlayerPrefs.GetString("ProbaUserID")) ? PlayerPrefs.GetString("ProbaUserID") : Guid.Empty.ToString();
-            eventData.SessionHandle = !string.IsNullOrEmpty(PlayerPrefs.GetString("ProbaUserName")) ? PlayerPrefs.GetString("ProbaUserName") : Guid.Empty.ToString();
+            eventData.SessionHandle = !string.IsNullOrEmpty(PlayerPrefs.GetString("ProbaSessionID")) ? PlayerPrefs.GetString("ProbaSessionID") : Guid.Empty.ToString();
+            eventData.UserName = !string.IsNullOrEmpty(PlayerPrefs.GetString("ProbaUserName")) ? PlayerPrefs.GetString("ProbaUserName") : "";
             eventData.Class = Class;
             eventData.UniqueId = DeviceUniqueId;
         }

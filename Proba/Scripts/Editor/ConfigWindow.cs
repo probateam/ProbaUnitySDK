@@ -66,8 +66,10 @@ namespace Proba.Scripts.Editor
             {
                 PlayerPrefs.SetString("ProbaSessionCount", "");
                 PlayerPrefs.SetString("ProbaFirstSessionTime", "");
-                PlayerPrefs.SetInt("ProbaHasOpenSession", 0);
                 PlayerPrefs.SetString("ProbaUserID", "");
+                PlayerPrefs.SetString("ProbaSessionID", "");
+                PlayerPrefs.SetInt("ProbaHasOpenSession", 0);
+                Debug.Log("Device Session has been Reset");
             }
 
 

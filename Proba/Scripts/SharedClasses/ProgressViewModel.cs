@@ -2,13 +2,13 @@
 {
     internal class ProgressViewModel : BaseEventDataViewModel
     {
-        public string progress;
-        public string configurations;
+        public string Progress;
+        public string Configurations;
 
         internal ProgressViewModel(string progress, string configurations)
         {
-            this.progress = progress;
-            this.configurations = configurations;
+            Progress = progress;
+            Configurations = configurations;
         }
 
         internal ProgressViewModel()

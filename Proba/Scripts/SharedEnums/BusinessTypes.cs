@@ -2,7 +2,7 @@
 {
     public enum BusinessTypes
     {
-        RechargeWallet, //ingame currnecy
-        DirectPurchese //item
+        RechargeWallet, 
+        DirectPurchese
     }
 }

@@ -4,18 +4,18 @@ namespace Proba.Scripts.SharedClasses
 {
     internal class BusinessEventViewModel : BaseEventDataViewModel
     {
-        public BusinessTypes BusinessType; //* ->
-        public double Value; //meghdar
-        public string Currency; //IRR
-        public string ItemName; //chizi ke kharide
-        public int TransactionCount; // yeki az oon 14ta
-        public string CartName; //kodom forshgah (akhare game, avale game , ...)
-        public string ExtraDetails; //100 ch
-        public PaymentTypes PaymentType; // ->
-        public bool SpecialEvent; //
-        public string SpecialEventName; //
-        public double Amount; //meghdare pool ya tedad item
-        public bool VirtualCurrency; //ingame kharj karde
+        public BusinessTypes BusinessType; 
+        public double Value; 
+        public string Currency; 
+        public string ItemName; 
+        public int TransactionCount; 
+        public string CartName; 
+        public string ExtraDetails; 
+        public PaymentTypes PaymentType; 
+        public bool SpecialEvent; 
+        public string SpecialEventName; 
+        public double Amount; 
+        public bool VirtualCurrency; 
 
         internal BusinessEventViewModel(BusinessTypes businessType, double value, string currency, string itemName, int transactionCount,
             string cartName, string extraDetails, PaymentTypes paymentType, bool specialEvent, string specialEventName, double amount, bool virtualCurrency)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.IO;
 using System.Text;
 
@@ -77,7 +78,7 @@ namespace Proba.Scripts
 
             if (SaveInFile)
             {
-                mainLog.Append("Proba Warning: " + warning + " Message: " + message + "\n\n");
+                mainLog.Append(DateTime.Now + "Proba Warning: " + warning + builder + "\n\n");
             }
         }
 
@@ -95,7 +96,7 @@ namespace Proba.Scripts
 
             if (SaveInFile)
             {
-                mainLog.Append("Proba Error: " + error + " Message: " + message + "\n\n");
+                mainLog.Append(DateTime.Now + "Proba Error: " + error + builder + "\n\n");
             }
             Broker.ThereIsaError();
         }

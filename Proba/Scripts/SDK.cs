@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Proba.Scripts.Client;
 using Proba.Scripts.SharedClasses;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Proba.Scripts
 {
@@ -58,6 +59,7 @@ namespace Proba.Scripts
             Broker.EndSession += END_SESSION_EVENT;
             //account
             Broker.Register += RegisterAsync;
+            Broker.CheckProgressionStatus += CheckProgressionStatusAsync;
             Broker.UpdateUserName += UpdateUsernameAsync;
             Broker.SaveUserProgress += SaveUserConfigAsync;
             Broker.GetRemoteConfiguration += GetRemoteConfigurationAsync;
@@ -89,6 +91,7 @@ namespace Proba.Scripts
             Broker.EndSession -= END_SESSION_EVENT;
             //account
             Broker.Register -= RegisterAsync;
+            Broker.CheckProgressionStatus -= CheckProgressionStatusAsync;
             Broker.UpdateUserName -= UpdateUsernameAsync;
             Broker.SaveUserProgress -= SaveUserConfigAsync;
             Broker.GetRemoteConfiguration -= GetRemoteConfigurationAsync;
@@ -217,7 +220,7 @@ namespace Proba.Scripts
                     return;
                 }
 
-                _basicData.UserId = registerResponse.userId;
+                _basicData.UserId = registerResponse.UserId;
                 _basicData.ABTest = registerResponse.AbTest;
                 _basicData.CurrentUserName = username;
                 _basicData.SessionCount = 0;
@@ -258,7 +261,7 @@ namespace Proba.Scripts
                     return;
                 }
 
-                _basicData.UserId = registerResponse.userId;
+                _basicData.UserId = registerResponse.UserId;
                 _basicData.ABTest = registerResponse.AbTest;
                 _basicData.CurrentUserName = baseEvent.UserName;
                 _basicData.SessionCount = 0;
@@ -283,12 +286,70 @@ namespace Proba.Scripts
             }
         }
 
+        private async void CheckProgressionStatusAsync()
+        {
+            var baseEvent = new BaseEventDataViewModel();
+
+            if (Application.internetReachability == NetworkReachability.NotReachable || _sending)
+            {
+                SaveCheckProgressionStatusInDB(baseEvent);
+                return;
+            }
+            try
+            {
+                var (success, statusCode, progressionStatus) = await _probaHttpClient.CheckProgressionStatusAsync(baseEvent);
+                if (!success)
+                {
+                    SaveCheckProgressionStatusInDB(baseEvent);
+                    return;
+                }
+                PROBA.ProgressionStatusReceived(progressionStatus);
+
+            }
+            catch (Exception e)
+            {
+                _probaLogger.LogError(e.Message, e.StackTrace);
+                SaveCheckProgressionStatusInDB(baseEvent);
+            }
+        }
+
+        private async void ExsitingCheckProgressionStatusAsync(BaseEventDataViewModel baseEvent)
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable || _sending)
+            {
+                OldRecordCouldNotSent();
+                return;
+            }
+            try
+            {
+                var (success, statusCode, progressionStatus) = await _probaHttpClient.CheckProgressionStatusAsync(baseEvent);
+                if (!success)
+                {
+                    OldRecordCouldNotSent();
+                    return;
+                }
+                PROBA.ProgressionStatusReceived(progressionStatus);
+                OldRecordSent();
+
+            }
+            catch (Exception e)
+            {
+                _probaLogger.LogError(e.Message, e.StackTrace);
+                OldRecordCouldNotSent();
+            }
+        }
+
         private async void UpdateUsernameAsync(string username)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                _probaLogger.LogWarning("UpdateUserName: Username is Empty ,Username Changed to Random Value");
+                username = "User" + Random.Range(0, 1000);
+            }
             var baseEvent = new BaseEventDataViewModel { UserName = username };
             if (Application.internetReachability == NetworkReachability.NotReachable || _sending)
             {
-                SaveRegisterInDB(baseEvent);
+                SaveUpdateUserInDB(baseEvent);
                 return;
             }
             try
@@ -296,7 +357,7 @@ namespace Proba.Scripts
                 var (success, statusCode) = await _probaHttpClient.UpdateUserInfoAsync(baseEvent);
                 if (!success)
                 {
-                    SaveRegisterInDB(baseEvent);
+                    SaveUpdateUserInDB(baseEvent);
                     return;
                 }
 
@@ -308,16 +369,54 @@ namespace Proba.Scripts
             catch (Exception e)
             {
                 _probaLogger.LogError(e.Message, e.StackTrace);
-                SaveRegisterInDB(baseEvent);
+                SaveUpdateUserInDB(baseEvent);
+            }
+        }
+
+        private async void ExistingUpdateUsernameAsync(BaseEventDataViewModel baseEvent)
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                OldRecordCouldNotSent();
+                return;
+            }
+            try
+            {
+                var (success, statusCode) = await _probaHttpClient.UpdateUserInfoAsync(baseEvent);
+                if (!success)
+                {
+                    OldRecordCouldNotSent();
+                    return;
+                }
+
+                _basicData.CurrentUserName = baseEvent.UserName;
+                PlayerPrefs.SetString("ProbaUserName", _basicData.CurrentUserName);
+
+                OldRecordSent();
+            }
+            catch (Exception e)
+            {
+                _probaLogger.LogError(e.Message, e.StackTrace);
+                OldRecordCouldNotSent();
             }
         }
 
         private async void SaveUserConfigAsync(string progress, string configuration)
         {
+            if (string.IsNullOrEmpty(progress))
+            {
+                _probaLogger.LogWarning("SaveUserProgress: Progress is Empty ,Progress Changed to default Value");
+                progress = "Progress";
+            }
+            if (string.IsNullOrEmpty(configuration))
+            {
+                _probaLogger.LogWarning("SaveUserProgress: configuration is Empty ,configuration Changed to default Value");
+                configuration = "configuration";
+            }
             var progressViewModel = new ProgressViewModel()
             {
-                progress = progress,
-                configurations = configuration
+                Progress = progress,
+                Configurations = configuration
             };
             if (Application.internetReachability == NetworkReachability.NotReachable || _sending)
             {
@@ -409,7 +508,7 @@ namespace Proba.Scripts
                     PROBA.UserProgressCanceled(RequestResponse.Error);
                 }
 
-                PROBA.UserDataReceived(configurations.progress, configurations.configurations);
+                PROBA.UserDataReceived(configurations.Progress, configurations.Configurations);
 
             }
             catch (Exception e)
@@ -511,8 +610,8 @@ namespace Proba.Scripts
                     _probaLogger.LogWarning($"couldn't send start session with {statusCode} status");
                 }
 
-                _basicData.CurrentSessionId = sessionResponse.sessionId;
-                _basicData.CurrentSessionLocation = sessionResponse.location;
+                _basicData.CurrentSessionId = sessionResponse.SessionId;
+                _basicData.CurrentSessionLocation = sessionResponse.Location;
                 _basicData.CurrentSessionStartTime = DateTime.UtcNow;
                 _basicData.HasActiveSession = true;
                 _basicData.SessionCount = sessionViewModel.SessionCount;
@@ -549,8 +648,8 @@ namespace Proba.Scripts
                     return;
                 }
 
-                _basicData.CurrentSessionId = sessionResponse.sessionId;
-                _basicData.CurrentSessionLocation = sessionResponse.location;
+                _basicData.CurrentSessionId = sessionResponse.SessionId;
+                _basicData.CurrentSessionLocation = sessionResponse.Location;
                 _basicData.CurrentSessionStartTime = DateTime.UtcNow;
                 _basicData.HasActiveSession = true;
                 _basicData.SessionCount = sessionViewModel.SessionCount;
@@ -851,14 +950,15 @@ namespace Proba.Scripts
                     return;
                 }
 
-                List<UserAchievementViewModel> prunedUserAchievements = new List<UserAchievementViewModel>();
+                var prunedUserAchievements = new List<UserAchievementViewModel>();
                 foreach (var Achievement in allAchievements)
                 {
                     foreach (var userAchievement in userAchievements)
                     {
                         if (userAchievement.AchievementId == Achievement.ID)
                         {
-                            userAchievement.AchievementName = Achievement.AchievementEnName;
+                            userAchievement.AchievementEnName = Achievement.AchievementEnName;
+                            userAchievement.AchievementName = Achievement.AchievementName;
                             prunedUserAchievements.Add(userAchievement);
                             break;
                         }
@@ -879,7 +979,7 @@ namespace Proba.Scripts
             var trophyRequest = new TrophyRequest()
             {
                 LeaderBoardId = leaderBoardId,
-                UserId = self ? _basicData.UserId : default
+                UserId = self ? _basicData.UserId : Guid.Empty.ToString()
             };
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
@@ -1020,6 +1120,18 @@ namespace Proba.Scripts
         {
             var regDB = JsonConvert.SerializeObject(registerViewModel);
             DatabaseConnection.InsertUnsentEvent("REGISTER", regDB);
+        }
+
+        private void SaveUpdateUserInDB(BaseEventDataViewModel updatedUser)
+        {
+            var userDB = JsonConvert.SerializeObject(updatedUser);
+            DatabaseConnection.InsertUnsentEvent("UPDATE", userDB);
+        }
+
+        private void SaveCheckProgressionStatusInDB(BaseEventDataViewModel progressionStatus)
+        {
+            var progStatDB = JsonConvert.SerializeObject(progressionStatus);
+            DatabaseConnection.InsertUnsentEvent("STATUS", progStatDB);
         }
 
         private void SaveStartSessionInDB(StartSessionViewModel sessionViewModel)

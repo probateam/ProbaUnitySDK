@@ -68,6 +68,13 @@ namespace Proba.Scripts
             TapEventView?.Invoke(tapEventViewModel);
         }
 
+        internal static Action CheckProgressionStatus;
+
+        internal static void CallCheckProgressionStatus()
+        {
+            CheckProgressionStatus?.Invoke();
+        }
+
         internal static Action<string, bool> Register;
         internal static void CallRegister(string username, bool newUser)
         {

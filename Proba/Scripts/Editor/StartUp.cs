@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 
@@ -15,6 +14,7 @@ public class Startup
             dbPath = dbPath.Replace(Application.dataPath, "Assets");
             newdbPath = newdbPath.Replace(Application.dataPath, "Assets");
             System.IO.File.Move(dbPath, newdbPath);
+            Debug.Log("Proba Added");
         }
         catch (System.IO.FileNotFoundException)
         {

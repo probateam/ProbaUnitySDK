@@ -6,7 +6,7 @@ namespace Proba.Scripts.SharedClasses
     {
         public string socialMediaName;
         public SocialEvenTypes socialEvenType;
-        public int value; //if rate
+        public int value; 
 
         internal SocialEventViewModel(string socialMediaName, SocialEvenTypes socialEvenType, int value)
         {

@@ -4,39 +4,38 @@ namespace Proba.Scripts.SharedClasses
 {
     public class RemoteConfigurationsViewModel
     {
-        public string configKey;
-        public string configDescription;
-        public string value;
-        public DateTime startTime;
-        public long startTicks;
-        public DateTime endTime;
-        public long endTicks;
+        public string ConfigKey;
+        public string ConfigDescription;
+        public string Value;
+        public DateTime StartTime;
+        public long StartTicks;
+        public DateTime EndTime;
+        public long EndTicks;
 
         #region OS Filter
 
-        public string os;
-        public bool os_Exclude;
+        public string OS;
+        public bool OS_Exclude;
         #endregion
 
         #region Country Filter
 
-        public string country;
-        public bool country_Exclude;
+        public string Country;
+        public bool Country_Exclude;
         #endregion
 
         #region Build Filter
 
-        public string build;
-        public bool build_Exclude;
+        public string Build;
+        public bool Build_Exclude;
         #endregion
 
         #region Class Filter
 
-        public string timeClass;
-        public bool timeClass_Exclude;
+        public string TimeClass;
+        public bool TimeClass_Exclude;
         #endregion
 
-        public int priority;
-        public bool active;
+        public int Priority;
     }
 }

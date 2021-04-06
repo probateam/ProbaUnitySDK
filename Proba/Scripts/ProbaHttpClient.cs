@@ -37,7 +37,6 @@ namespace Proba.Scripts
 
         #region Events
 
-        //id begir
         /// <summary>Sends a event batch asynchronous.</summary>
         /// <param name="batchEventViewModel">event batch</param>
         /// <returns>
@@ -126,15 +125,30 @@ namespace Proba.Scripts
                 {
                     var result = JsonConvert.DeserializeObject<RegisterResponseViewModel>(content);
 
-                    if (!string.IsNullOrEmpty(result.progress))
-                        result.progress = Encoding.UTF8.GetString(Convert.FromBase64String(result.progress));
-                    else
-                        Logger.LogWarning("Registered, no progress on server");
+                    return (true, statusCode, result);
+                }
+                else
+                {
+                    Logger.LogWarning($"register not successful with {statusCode} status");
+                    return (default, statusCode, default);
+                }
 
-                    if (!string.IsNullOrEmpty(result.configurations))
-                        result.configurations = Encoding.UTF8.GetString(Convert.FromBase64String(result.configurations));
-                    else
-                        Logger.LogWarning("Registered, no configuration on server");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.Message, e.StackTrace);
+                throw;
+            }
+        }
+
+        internal async Task<(bool success, HttpStatusCode statusCode, bool progressionStatus)> CheckProgressionStatusAsync(BaseEventDataViewModel baseEventDataViewModel)
+        {
+            try
+            {
+                var (success, statusCode, content) = await PostJsonRequestAsync($"{BaseURL}/{APIVersion}/Account/CheckProgressionStatus/{PublicKey}", JsonConvert.SerializeObject(baseEventDataViewModel), CancellationTokenSource);
+                if (success)
+                {
+                    var result = JsonConvert.DeserializeObject<RegisterResponseViewModel>(content).ProgressionStatus;
 
                     return (true, statusCode, result);
                 }
@@ -179,18 +193,19 @@ namespace Proba.Scripts
                 throw;
             }
         }
+
         internal async Task<(bool success, HttpStatusCode statusCode)> SaveUserProgressAsync(ProgressViewModel progress)
         {
             try
             {
-                progress.progress = Convert.ToBase64String(Encoding.UTF8.GetBytes(progress.progress));
-                progress.configurations = Convert.ToBase64String(Encoding.UTF8.GetBytes(progress.configurations));
+                progress.Progress = Convert.ToBase64String(Encoding.UTF8.GetBytes(progress.Progress));
+                progress.Configurations = Convert.ToBase64String(Encoding.UTF8.GetBytes(progress.Configurations));
                 var (success, statusCode, content) = await PostJsonRequestAsync($"{BaseURL}/{APIVersion}/Account/UpdateUserProgress/{PublicKey}", JsonConvert.SerializeObject(progress), CancellationTokenSource);
                 if (success)
                     return (success, statusCode);
                 else
                 {
-                    Logger.LogWarning($"User progress save not successful with {statusCode} status");
+                    Logger.LogWarning($"User Progress save not successful with {statusCode} status");
                     return (default, statusCode);
                 }
             }
@@ -201,7 +216,6 @@ namespace Proba.Scripts
             }
         }
 
-        //ba inam mitonam check konam
         internal async Task<(bool success, HttpStatusCode statusCode, RegisterResponseViewModel sessionResponse)> GetUserDataAsync(BaseEventDataViewModel baseEventDataViewModel)
         {
             try
@@ -210,17 +224,13 @@ namespace Proba.Scripts
                 if (success)
                 {
                     var result = JsonConvert.DeserializeObject<RegisterResponseViewModel>(content);
-                    if (!string.IsNullOrEmpty(result.progress))
-                        result.progress = Encoding.UTF8.GetString(Convert.FromBase64String(result.progress));
-                    else
-                        Logger.LogWarning("no progress in get user data");
+                    if (!string.IsNullOrEmpty(result.Progress))
+                        result.Progress = Encoding.UTF8.GetString(Convert.FromBase64String(result.Progress));
 
-                    if (string.IsNullOrEmpty(result.configurations))
+                    if (!string.IsNullOrEmpty(result.Configurations))
+                        result.Configurations = Encoding.UTF8.GetString(Convert.FromBase64String(result.Configurations));
 
-                        result.progress = Encoding.UTF8.GetString(Convert.FromBase64String(result.progress));
-                    else
-                        Logger.LogWarning("no configuration in get user data");
-                    return (success, statusCode, result);
+                    return (true, statusCode, result);
                 }
                 else
                 {
@@ -252,13 +262,13 @@ namespace Proba.Scripts
                         return (success, statusCode, congifs);
                     else
                     {
-                        Logger.LogWarning(statusCode.ToString(), $"user update status was {statusCode}");
+                        Logger.LogWarning(statusCode.ToString(), $"get Remote Configurations status was {statusCode}");
                         return (success, statusCode, default);
                     }
                 }
                 else
                 {
-                    Logger.LogWarning($"get remote Configuration not successful with {statusCode} status");
+                    Logger.LogWarning($"get Remote Configurations not successful with {statusCode} status");
                     return (default, statusCode, default);
                 }
 
@@ -405,6 +415,10 @@ namespace Proba.Scripts
                 }
                 else
                 {
+                    if (statusCode == HttpStatusCode.BadRequest && content == "This user is not in this leaderboard.")
+                    {
+                        return (true, statusCode, new List<LeaderBoardUserViewModel>());
+                    }
                     Logger.LogWarning($"get user leader boards not successful with {statusCode} status");
                     return (default, statusCode, default);
                 }
@@ -427,13 +441,13 @@ namespace Proba.Scripts
                         return (success, statusCode);
                     else
                     {
-                        Logger.LogWarning($"add leader board score status was {statusCode}");
+                        Logger.LogWarning($"add leader board Score status was {statusCode}");
                         return (success, statusCode);
                     }
                 }
                 else
                 {
-                    Logger.LogWarning($"add leader board score not successful with {statusCode} status");
+                    Logger.LogWarning($"add leader board Score not successful with {statusCode} status");
                     return (default, statusCode);
                 }
             }
@@ -485,10 +499,6 @@ namespace Proba.Scripts
             {
                 var response = await Client.SendAsync(request, cts.Token).ConfigureAwait(false);
                 var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (!response.IsSuccessStatusCode)
-                {
-                    Logger.LogWarning($"Unsuccessful http request response for request {url} with {response.StatusCode} status code and response: {content}");
-                }
 
                 return (response.IsSuccessStatusCode, response.StatusCode, content);
             }

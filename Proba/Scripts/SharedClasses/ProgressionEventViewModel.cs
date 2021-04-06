@@ -5,14 +5,14 @@ namespace Proba.Scripts.SharedClasses
     internal class ProgressionEventViewModel : BaseEventDataViewModel
     {
         //
-        public ProgressionTypes ProgressionType; //*
-        public int Attempts; //level
-        public double Score; //endless
-        public string GameLevelName1; //*
+        public ProgressionTypes ProgressionType; 
+        public int Attempts; 
+        public double Score; 
+        public string GameLevelName1; 
         public string GameLevelName2;
         public string GameLevelName3;
         public string GameLevelName4;
-        public string ProgressionId; //* in db
+        public string ProgressionId; 
         public bool ArenaMode;
         public string ArenaName;
         public byte first = 0;

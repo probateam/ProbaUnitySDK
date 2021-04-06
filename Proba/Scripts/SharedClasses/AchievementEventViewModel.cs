@@ -5,12 +5,12 @@ namespace Proba.Scripts.SharedClasses
 {
     internal class AchievementEventViewModel : BaseEventDataViewModel
     {
-        public AchievementTypes AchievementType; //*
-        public string GameLevelName1; //*
+        public AchievementTypes AchievementType; 
+        public string GameLevelName1; 
         public string GameLevelName2;
         public string GameLevelName3;
         public string GameLevelName4;
-        public List<string> RelatedProgressionEventIds; // 
+        public List<string> RelatedProgressionEventIds; 
         public long NewPlayerLevel;
         public long PrevRank;
         public long NewRank;

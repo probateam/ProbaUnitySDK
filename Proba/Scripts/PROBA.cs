@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Proba.Scripts;
 using Proba.Scripts.SharedClasses;
+using ProbaDotnetSDK.SharedEnums;
 using UnityEngine;
 
 namespace Proba
@@ -20,8 +21,8 @@ namespace Proba
         /// <param name="gameLevelName4">additional name of level or section (Optional)</param>
         /// <param name="relatedProgressionEventIds">list of related progression event's IDs (Optional)</param>
         /// <param name="newPlayerLevel">user's new gained level (Optional)</param>
-        /// <param name="prevRank">user's previous rank (Optional)</param>
-        /// <param name="newRank">user's new rank (Optional)</param>
+        /// <param name="prevRank">user's previous Rank (Optional)</param>
+        /// <param name="newRank">user's new Rank (Optional)</param>
         /// <param name="leaderBoardName">leader board's name if achievements belongs to leader board (Optional)</param>
         /// <param name="arenaMode">is achievements gained in arena mode (Optional)</param>
         /// <param name="arenaName">arena's name (Optional)</param>
@@ -35,9 +36,10 @@ namespace Proba
         }
 
         /// <summary>Call PROBA Advertisement event</summary>
-        public static void AdvertisementEvent(string addId, bool skipped = false, bool clicked = false)
+        public static void AdvertisementEvent(string addId, bool skipped, AdActions action, bool firstTime = false,
+            AdFailShowReasons failShowReason = AdFailShowReasons.Unknown, int duration = 0, string sdkName = "", AdTypes type = AdTypes.RewardedVideo, string placement = "", double amount = 0.0)
         {
-            _ = new AdvertisementEventViewModel(addId, skipped, clicked);
+            _ = new AdvertisementEventViewModel(addId, skipped, action,firstTime,failShowReason,duration,sdkName,type,placement,amount);
         }
 
 
@@ -69,15 +71,15 @@ namespace Proba
         /// <summary>Call PROBA Progression event</summary>
         /// <param name="progressionType">type of progression</param>
         /// <param name="gameLevelName1">name of level</param>
-        /// <param name="eventId">progression event ID for linking to achievemens (Optional)</param>
+        /// <param name="eventId">progression event ID for linking to achievements (Optional)</param>
         /// <param name="attempts">number of user's attempts (Optional)</param>
-        /// <param name="score">user's score (Optional)</param>
+        /// <param name="score">user's Score (Optional)</param>
         /// <param name="gameLevelName2">additional name of level or section (Optional)</param>
         /// <param name="gameLevelName3">additional name of level or section (Optional)</param>
         /// <param name="gameLevelName4">additional name of level or section (Optional)</param>
         /// <param name="arenaMode">is progression in arena mode? (Optional)</param>
         /// <param name="arenaName">arena name (Optional)</param>
-        public static void ProgressionEvent(ProgressionTypes progressionType, string gameLevelName1, string eventId, int attempts = 0, double score = 0.0,
+        public static void ProgressionEvent(ProgressionTypes progressionType, string gameLevelName1, string eventId = "", int attempts = 0, double score = 0.0,
                 string gameLevelName2 = "level", string gameLevelName3 = "level", string gameLevelName4 = "level", bool arenaMode = false, string arenaName = "arena")
         {
             _ = new ProgressionEventViewModel(progressionType, attempts, score, gameLevelName1, gameLevelName2, gameLevelName3,
@@ -120,6 +122,20 @@ namespace Proba
             _ = new StartSessionViewModel(true);
         }
 
+        /// <summary>Check For Saved Progression On Proba</summary>
+        public static void CheckProgressionStatus()
+        {
+            Broker.CallCheckProgressionStatus();
+        }
+
+        /// <summary>Occurs when Progression Status received</summary>
+        public static event Action<bool> OnProgressionStatusReceived;
+
+        internal static void ProgressionStatusReceived(bool ProgressionStatus)
+        {
+            OnProgressionStatusReceived?.Invoke(ProgressionStatus);
+        }
+
         /// <summary>Registers user and Initializes Proba SDK</summary>
         /// <param name="username">The username.</param>
         /// <param name="newUser">is user new or not</param>
@@ -127,7 +143,8 @@ namespace Proba
         {
             Broker.CallRegister(username, newUser);
         }
-        /// <summary>Occurs when A/B Test's Key received</summary>
+
+        /// <summary>Occurs when A/B Test's Key after first register received</summary>
         public static event Action<string> OnABTestReceived;
 
         internal static void ABTestReceive(string abTest)
@@ -137,13 +154,13 @@ namespace Proba
 
         /// <summary>Updates the username</summary>
         /// <param name="username">new username</param>
-        public static void UpdateUserInfo(string username)
+        public static void UpdateUsername(string username)
         {
             Broker.CallUpdateUsername(username);
         }
 
-        /// <summary>Saves the user's progress</summary>
-        /// <param name="progress">The progress.</param>
+        /// <summary>Saves the user's Progress</summary>
+        /// <param name="progress">The Progress.</param>
         /// <param name="configuration">The configuration.</param>
         public static void SaveUserProgress(string progress, string configuration)
         {
@@ -171,20 +188,20 @@ namespace Proba
             OnRemoteConfigurationCanceled?.Invoke(response);
         }
 
-        /// <summary>gets user progress from Proba panel</summary>
+        /// <summary>gets user Progress from Proba panel</summary>
         public static void GetUserProgress()
         {
             Broker.CallGetUserProgress();
         }
 
-        /// <summary>Occurs when user progress received</summary>
+        /// <summary>Occurs when user Progress received</summary>
         public static event Action<string, string> OnUserProgressReceive;
         internal static void UserDataReceived(string progress, string configurations)
         {
             OnUserProgressReceive?.Invoke(progress, configurations);
         }
 
-        /// <summary>Occurs when user progress couldn't receive</summary>
+        /// <summary>Occurs when user Progress couldn't receive</summary>
         public static event Action<RequestResponse> OnUserProgressCanceled;
 
         internal static void UserProgressCanceled(RequestResponse response)
@@ -286,9 +303,9 @@ namespace Proba
             OnLeaderBoardUserListCanceled?.Invoke(response);
         }
 
-        /// <summary>put user's new score in leader board</summary>
+        /// <summary>put user's new Score in leader board</summary>
         /// <param name="leaderBoardId">The leader board identifier.</param>
-        /// <param name="score">The score.</param>
+        /// <param name="score">The Score.</param>
         /// <param name="userName">Name of the user.</param>
         public static void UserNewLeaderBoardScore(string leaderBoardId, long score, string userName = "")
         {
@@ -297,7 +314,7 @@ namespace Proba
 
         /// <summary>user's new achievement.</summary>
         /// <param name="achievementId">The achievement identifier.</param>
-        /// <param name="score">The score.</param>
+        /// <param name="score">The Score.</param>
         /// <param name="achievementStep">The achievement step.</param>
         public static void UserNewAchievement(string achievementId)
         {
