@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Proba;
-using ProbaDotnetSDK.SharedEnums;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,8 +24,6 @@ public class EventSample : MonoBehaviour
         if (ProgressionStatus)
         {
             PROBA.Register("Username", false);
-            //or
-            //PROBA.Register("Username", true);
         }
         else
         {

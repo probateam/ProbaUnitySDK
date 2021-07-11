@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Proba.Scripts.SharedClasses
+namespace Proba
 {
     internal class StartSessionViewModel : BaseEventDataViewModel
     {

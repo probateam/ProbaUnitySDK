@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using UnityEditor;
-
-namespace Proba.Scripts.SharedClasses
+﻿namespace Proba
 {
     public class LeaderBoardViewModel
     {

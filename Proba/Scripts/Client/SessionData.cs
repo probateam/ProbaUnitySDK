@@ -1,6 +1,4 @@
-﻿using Proba.Scripts.SharedClasses;
-
-namespace Proba.Scripts.Client
+﻿namespace Proba
 {
     internal class SessionData
     {

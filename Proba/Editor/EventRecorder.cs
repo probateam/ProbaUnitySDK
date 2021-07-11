@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Data;
 using Newtonsoft.Json;
-using Proba.Scripts.SharedClasses;
+using Proba;
 using UnityEditor;
 using UnityEngine;
 
-namespace Proba.Scripts.Editor
+namespace Proba.Editor
 {
     internal class EventRecorder : EditorWindow
     {
         #region variables
 
         private Vector2 scrollPos;
-        private DataTable _data;
+        private List<EventDataScheme> _dataSchemes;
 
         #endregion
 
@@ -45,19 +45,19 @@ namespace Proba.Scripts.Editor
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Show Unsent Event List"))
             {
-                DatabaseConnection.InitialConnectionString();
-                _data = DatabaseConnection.GetAllEvents();
+                DatabaseConnection.InitialDatabaseConnection();
+                _dataSchemes = DatabaseConnection.GetAllEvents();
             }
             if (GUILayout.Button("Flush Database"))
             {
-                DatabaseConnection.InitialConnectionString();
+                DatabaseConnection.InitialDatabaseConnection();
                 DatabaseConnection.FlushDatabase();
-                _data = DatabaseConnection.GetAllEvents();
+                _dataSchemes = DatabaseConnection.GetAllEvents();
             }
             EditorGUILayout.EndHorizontal();
 
 
-            if (_data == null)
+            if (_dataSchemes == null)
             {
                 EditorGUILayout.LabelField("Press 'Get Event List'");
                 return;
@@ -65,16 +65,15 @@ namespace Proba.Scripts.Editor
             var i = 0;
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
-            foreach (DataRow row in _data.Rows)
+            foreach (var dataScheme in _dataSchemes)
             {
-                var id = row["ID"];
-                var body = GetEventBody(row["Body"].ToString(), out var style);
-                var sent = row["Sent"];
-                var date = row["Date"];
+                var id = dataScheme.ID;
+                var body = GetEventBody(dataScheme.BODY, out var style);
+                var date = dataScheme.DATE;
                 var texture = MakeTex(200, 200, GetColor(i++));
 
                 EditorGUILayout.BeginVertical(style);
-                GUILayout.Label(id + " " + body + " " + sent);
+                GUILayout.Label(id + " " + body + " " + date);
                 EditorGUILayout.EndVertical();
             }
 

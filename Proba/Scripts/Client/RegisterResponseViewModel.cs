@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Proba.Scripts.Client
+﻿namespace Proba
 {
     internal class RegisterResponseViewModel
     {

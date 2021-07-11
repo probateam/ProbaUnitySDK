@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Proba.Scripts.SharedClasses
+namespace Proba
 {
     [Serializable]
-    internal class BaseEventDataViewModel
+    public class BaseEventDataViewModel
     {
         public string SessionHandle;
         public string UserId;
@@ -12,30 +12,30 @@ namespace Proba.Scripts.SharedClasses
         public string OS;
         public string Build;
         public string Class;
-        public string Nonce; 
+        public string Nonce;
         public string Device;
         public string SDKVersion;
-        public string Manufacturer; 
-        public EPlatforms Platform; 
-        public bool ProbaGameCenter; 
-        public bool LogOnGooglePlay; 
-        public string Engine; 
+        public string Manufacturer;
+        public EPlatforms Platform;
+        public bool ProbaGameCenter;
+        public bool LogOnGooglePlay;
+        public string Engine;
         public string ConnectionType;
         public string IOS_IDFA;
         public string Google_AID;
         public string Proba_GCID;
-        public string Custom1; 
+        public string Custom1;
         public string Custom2;
         public string Custom3;
         public string Custom4;
         public string Custom5;
         public long ClientTs;
-        public double Battery; 
+        public double Battery;
         public bool Charging;
 
-        public string UserName; 
-        public bool NewUser; 
-        public string UniqueId; 
+        public string UserName;
+        public bool NewUser;
+        public string UniqueId;
 
         internal BaseEventDataViewModel()
         {

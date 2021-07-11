@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Proba;
-using Proba.Scripts.SharedClasses;
 
 public class StartUpSample : MonoBehaviour
 {
@@ -20,6 +19,7 @@ public class StartUpSample : MonoBehaviour
     {
         if (PROBA.UserHasRegistered())
         {
+            Debug.Log("Welcome Back");
             PROBA.Initialize();
         }
         else

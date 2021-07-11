@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
-using Proba.Scripts.Client;
-using Proba.Scripts.SharedClasses;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Proba.Scripts
+namespace Proba
 {
-    internal class SDK : MonoBehaviour
+    public class SDK : MonoBehaviour
     {
         #region variables
-        internal string SecretKey { set; get; }
-        internal string PublicKey { set; get; }
-        internal bool RecordAllTouches { set; get; }
-        internal bool SaveInFile { set; get; }
-        internal bool ShowInConsole { set; get; }
+        public string SecretKey { set; get; }
+        public string PublicKey { set; get; }
+        public bool RecordAllTouches { set; get; }
+        public bool SaveInFile { set; get; }
+        public bool ShowInConsole { set; get; }
 
         private static BasicData _basicData;
         private ProbaHttpClient _probaHttpClient;
@@ -46,7 +44,7 @@ namespace Proba.Scripts
 
         private void OnEnable()
         {
-            DatabaseConnection.InitialConnectionString();
+            DatabaseConnection.InitialDatabaseConnection();
             Broker.StartSession += START_SESSION_EVENT;
             Broker.AchievementEvent += EVENT;
             Broker.AdvertisementEvent += EVENT;
@@ -139,11 +137,11 @@ namespace Proba.Scripts
         {
             try
             {
-                var firstData = DatabaseConnection.GetFirst().Rows[0];
-                _currentIndex = int.Parse(firstData["ID"].ToString());
-                SendOldRecord(firstData["CLASS"].ToString(), firstData["BODY"].ToString());
+                var firstData = DatabaseConnection.GetFirstEvent();
+                _currentIndex = int.Parse(firstData.ID.ToString());
+                SendOldRecord(firstData.CLASS.ToString(), firstData.BODY.ToString());
             }
-            catch (IndexOutOfRangeException)
+            catch (NullReferenceException)
             {
                 Invoke("SendFirstRecordFromDB", 10);
             }
@@ -189,7 +187,7 @@ namespace Proba.Scripts
         private void OldRecordSent()
         {
             _sending = false;
-            DatabaseConnection.DeleteEvent(_currentIndex);
+            DatabaseConnection.DeleteFirstEvent();
             Invoke("SendFirstRecordFromDB", 10);
         }
 

@@ -1,9 +1,8 @@
 ﻿using System;
-using UnityEngine;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Proba.Scripts
+namespace Proba
 {
     internal class HmacService
     {

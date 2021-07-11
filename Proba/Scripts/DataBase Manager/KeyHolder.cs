@@ -1,16 +1,17 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Proba.Scripts.Editor
+namespace Proba
 {
     /// <summary>Class to Save Config in Unity</summary>
-    internal class KeyHolder : ScriptableObject
+    public class KeyHolder : ScriptableObject
     {
         [SerializeField] [HideInInspector] private string _publicKey;
         [SerializeField] [HideInInspector] private string _secretKey;
         [SerializeField] [HideInInspector] private bool _recordAllTouches;
         [SerializeField] [HideInInspector] private bool _loggerShowInConsole;
         [SerializeField] [HideInInspector] private bool _loggerSaveInFile = true;
+        [SerializeField] [HideInInspector] private bool _startProba = true;
 
         public void SetKeys(string publicKey, string secretKey)
         {
@@ -31,7 +32,7 @@ namespace Proba.Scripts.Editor
             }
         }
 
-        internal bool HasKeys()
+        public bool HasKeys()
         {
             return !string.IsNullOrEmpty(_publicKey) && !string.IsNullOrEmpty(_secretKey);
         }
@@ -60,6 +61,16 @@ namespace Proba.Scripts.Editor
         public bool SaveInfile()
         {
             return _loggerSaveInFile;
+        }
+
+        public void SetStartProba(bool startProba)
+        {
+            _startProba = startProba;
+        }
+
+        public bool StartProba()
+        {
+            return _startProba;
         }
     }
 

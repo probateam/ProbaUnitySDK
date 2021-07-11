@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Proba.Scripts.SharedClasses
+﻿namespace Proba
 {
     internal class TapEventViewModel : BaseEventDataViewModel
     {

@@ -1,11 +1,11 @@
 ﻿using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using Proba.Scripts.Configuration;
 using UnityEditor;
 using UnityEngine;
+using Proba;
 using Ping = System.Net.NetworkInformation.Ping;
 
-namespace Proba.Scripts.Editor
+namespace Proba.Editor
 {
     internal class ConfigWindow : EditorWindow
     {
@@ -16,6 +16,7 @@ namespace Proba.Scripts.Editor
         [SerializeField] private bool _recordAllTouches;
         [SerializeField] private bool _saveInfile;
         [SerializeField] private bool _showInConsole;
+        [SerializeField] private bool _startProba;
         private static KeyHolder _keyHolder;
         private bool _connected;
 
@@ -45,6 +46,7 @@ namespace Proba.Scripts.Editor
                 _recordAllTouches = _keyHolder.IsRecordAllTouches();
                 _saveInfile = _keyHolder.SaveInfile();
                 _showInConsole = _keyHolder.ShowInConsole();
+                _startProba = _keyHolder.StartProba();
             }
 
             EditorGUI.BeginChangeCheck();
@@ -53,11 +55,13 @@ namespace Proba.Scripts.Editor
             _recordAllTouches = EditorGUILayout.Toggle("Record All Touches: ", _recordAllTouches);
             _saveInfile = EditorGUILayout.Toggle("Save Logs in File: ", _saveInfile);
             _showInConsole = EditorGUILayout.Toggle("Show Logs In Console: ", _showInConsole);
+            _startProba = EditorGUILayout.Toggle("Use Proba: ", _startProba);
             if (EditorGUI.EndChangeCheck())
             {
                 _keyHolder.SetKeys(_publicKey, _secretKey);
                 _keyHolder.RecordAllTouches(_recordAllTouches);
                 _keyHolder.SetLoggerProperties(_saveInfile, _showInConsole);
+                _keyHolder.SetStartProba(_startProba);
                 EditorUtility.SetDirty(_keyHolder);
                 AssetDatabase.SaveAssets();
             }
@@ -104,30 +108,9 @@ namespace Proba.Scripts.Editor
             return false;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void CreateSDK()
-        {
-            _keyHolder = GetKeyHolder();
-            if (!_keyHolder || !_keyHolder.HasKeys())
-            {
-                Debug.LogWarning("Proba SDK: Check Keys");
-                return;
-            }
-            var sdkKey = new GameObject("Proba SDK");
-            sdkKey.AddComponent<SDK>();
-            sdkKey.GetComponent<SDK>().PublicKey = _keyHolder.GetKeys(KeyType.PublicKey);
-            sdkKey.GetComponent<SDK>().SecretKey = _keyHolder.GetKeys(KeyType.SecretKey);
-            sdkKey.GetComponent<SDK>().RecordAllTouches = _keyHolder.IsRecordAllTouches();
-            sdkKey.GetComponent<SDK>().SaveInFile = _keyHolder.SaveInfile();
-            sdkKey.GetComponent<SDK>().ShowInConsole = _keyHolder.ShowInConsole();
-            sdkKey.AddComponent<DatabaseConnection>();
-            sdkKey.AddComponent<ProbaLogger>();
-            DontDestroyOnLoad(sdkKey);
-        }
-
         private static KeyHolder GetKeyHolder()
         {
-            return AssetDatabase.LoadAssetAtPath<KeyHolder>(ConfigurationModel.ConfigPath);
+            return Resources.Load<KeyHolder>("ProbaConfig");
         }
     }
 }

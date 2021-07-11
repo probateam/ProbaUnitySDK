@@ -2,8 +2,9 @@
 using UnityEngine;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
-namespace Proba.Scripts
+namespace Proba
 {
     public class ProbaLogger : MonoBehaviour
     {
@@ -13,7 +14,7 @@ namespace Proba.Scripts
         private bool SaveInFile { set; get; }
         private bool ShowInConsole { set; get; }
 
-        private StringBuilder mainLog;
+        private string _path;
 
         #endregion
 
@@ -21,13 +22,13 @@ namespace Proba.Scripts
         {
             SaveInFile = saveInFile;
             ShowInConsole = showInConsole;
-            //open log file
-            var path = Application.dataPath + "/ProbaLog.log";
-            if (!File.Exists(path))
+            //create log file
+            _path = Application.persistentDataPath + "/Log.pnm";
+            if (!File.Exists(_path))
             {
-                File.WriteAllText(path, "PROBA LOG\n");
+                var fileStream = new FileStream(_path, FileMode.Create);
+                fileStream.Close();
             }
-            mainLog = new StringBuilder(File.ReadAllText(path));
         }
 
         private void OnEnable()
@@ -37,16 +38,23 @@ namespace Proba.Scripts
 
         private void OnDisable()
         {
-            WriteLog();
             Application.logMessageReceived -= SystemLog;
         }
 
-        private void WriteLog()
+        private void WriteLog(string date, string body)
         {
-            var path = Application.dataPath + "/ProbaLog.log";
-            File.WriteAllText(path, mainLog.ToString());
+            var log = new LogDataScheme(date, body);
+            var logJason = JsonConvert.SerializeObject(log);
 
+            var fileStream = new FileStream(_path, FileMode.Append);
+            var streamWriter = new StreamWriter(fileStream);
+
+            streamWriter.WriteLine(logJason);
+            streamWriter.Flush();
+
+            fileStream.Close();
         }
+
         /// <summary>logs systems logs</summary>
         /// <param name="logString">The log string.</param>
         /// <param name="stackTrace">The stack trace.</param>
@@ -55,7 +63,7 @@ namespace Proba.Scripts
         {
             if (SaveInFile && type != LogType.Log)
             {
-                var stringBuilder = new StringBuilder(type + " : Log: " + logString + " stackTrace: " + stackTrace + "\n\n");
+                WriteLog(DateTime.Now.ToString(), type + " : Log: " + logString + " stackTrace: " + stackTrace + "\n\n");
             }
 
             if (type == LogType.Error || type == LogType.Exception)
@@ -78,7 +86,7 @@ namespace Proba.Scripts
 
             if (SaveInFile)
             {
-                mainLog.Append(DateTime.Now + "Proba Warning: " + warning + builder + "\n\n");
+                WriteLog(DateTime.Now.ToString(), "Proba Warning: " + warning + builder + "\n\n");
             }
         }
 
@@ -96,7 +104,7 @@ namespace Proba.Scripts
 
             if (SaveInFile)
             {
-                mainLog.Append(DateTime.Now + "Proba Error: " + error + builder + "\n\n");
+                WriteLog(DateTime.Now.ToString(), "Proba Error: " + error + builder + "\n\n");
             }
             Broker.ThereIsaError();
         }

@@ -1,8 +1,12 @@
 {
-    "name": "PNM.Proba",
-    "references": [],
+    "name": "PNM.Proba.Editor",
+    "references": [
+        "PNM.Proba"
+    ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

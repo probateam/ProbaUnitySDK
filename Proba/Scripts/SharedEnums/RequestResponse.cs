@@ -1,5 +1,8 @@
-﻿public enum RequestResponse 
+﻿namespace Proba
 {
-    NoInternet,
-    Error
+    public enum RequestResponse
+    {
+        NoInternet,
+        Error
+    }
 }

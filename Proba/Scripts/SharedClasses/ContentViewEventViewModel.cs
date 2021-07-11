@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Proba.Scripts.SharedClasses
+namespace Proba
 {
     internal class ContentViewEventViewModel : BaseEventDataViewModel
     {

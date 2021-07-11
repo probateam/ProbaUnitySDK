@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Proba;
-using Proba.Scripts.SharedClasses;
 
 public class LeaderBoardSample : MonoBehaviour
 {
@@ -32,8 +31,6 @@ public class LeaderBoardSample : MonoBehaviour
         if (ProgressionStatus)
         {
             PROBA.Register("Username", false);
-            //or
-            //PROBA.Register("Username", true);
         }
         else
         {

@@ -1,6 +1,4 @@
-﻿using ProbaDotnetSDK.SharedEnums;
-
-namespace Proba.Scripts.SharedClasses
+﻿namespace Proba
 {
     internal class AdvertisementEventViewModel : BaseEventDataViewModel
     {

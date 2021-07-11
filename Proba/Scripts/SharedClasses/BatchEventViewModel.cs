@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Proba.Scripts.SharedClasses
+namespace Proba
 {
     internal class BatchEventViewModel
     {

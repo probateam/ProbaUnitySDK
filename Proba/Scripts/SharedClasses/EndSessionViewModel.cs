@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Proba.Scripts.SharedClasses
+namespace Proba
 {
     internal class EndSessionViewModel
     {

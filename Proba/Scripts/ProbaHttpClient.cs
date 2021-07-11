@@ -6,12 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Proba.Scripts.Client;
-using Proba.Scripts.Configuration;
-using Proba.Scripts.SharedClasses;
-using UnityEngine;
 
-namespace Proba.Scripts
+namespace Proba
 {
     internal class ProbaHttpClient
     {
@@ -499,7 +495,6 @@ namespace Proba.Scripts
             {
                 var response = await Client.SendAsync(request, cts.Token).ConfigureAwait(false);
                 var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
                 return (response.IsSuccessStatusCode, response.StatusCode, content);
             }
             catch (Exception e)

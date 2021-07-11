@@ -1,4 +1,4 @@
-﻿namespace Proba.Scripts.SharedClasses
+﻿namespace Proba
 {
     internal class ProgressViewModel : BaseEventDataViewModel
     {

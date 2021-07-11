@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Security;
-using Proba.Scripts.SharedClasses;
-using UnityEngine;
 
-namespace Proba.Scripts
+namespace Proba
 {
     internal class Broker
     {

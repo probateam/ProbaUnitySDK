@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Proba.Scripts;
-using Proba.Scripts.SharedClasses;
-using ProbaDotnetSDK.SharedEnums;
 using UnityEngine;
 
 namespace Proba

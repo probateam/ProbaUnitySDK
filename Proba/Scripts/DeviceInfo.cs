@@ -1,9 +1,7 @@
 ﻿using System;
-using Proba.Scripts.Configuration;
-using Proba.Scripts.SharedClasses;
 using UnityEngine;
 
-namespace Proba.Scripts
+namespace Proba
 {
     public static class DeviceInfo
     {
