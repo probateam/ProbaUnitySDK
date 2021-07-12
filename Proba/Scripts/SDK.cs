@@ -27,7 +27,7 @@ namespace Proba
         private int _currentIndex;
 
         private const int MAX_EVENT_COUNT = 20;
-        private const float MAX_TIME = 30;
+        private const float MAX_TIME = 15;
 
         #endregion
 
@@ -75,6 +75,10 @@ namespace Proba
 
         private void OnApplicationQuit()
         {
+            if (_totalEventCount > 0)
+            {
+                SaveBatchEventInDB(_batchEventViewModel);
+            }
             new EndSessionViewModel(_basicData.UserId, _basicData.CurrentSessionId);
 
             Broker.StartSession -= START_SESSION_EVENT;
@@ -187,8 +191,8 @@ namespace Proba
         private void OldRecordSent()
         {
             _sending = false;
-            DatabaseConnection.DeleteFirstEvent();
-            Invoke("SendFirstRecordFromDB", 10);
+            DatabaseConnection.DeleteFirstEvent(1);
+            Invoke("SendFirstRecordFromDB", 5);
         }
 
         private void OldRecordCouldNotSent()
@@ -1152,8 +1156,42 @@ namespace Proba
 
         private void SaveBatchEventInDB(BatchEventViewModel batchEventViewModel)
         {
-            var beDB = JsonConvert.SerializeObject(batchEventViewModel);
-            DatabaseConnection.InsertUnsentEvent("BATCH_EVENT", beDB);
+            var bodies = new List<string>();
+
+            foreach (var model in batchEventViewModel.Achievements)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.Advertisements)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.Businesses)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.ContentViews)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.DesignEvent)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.Progressions)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.Socials)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+            foreach (var model in batchEventViewModel.Taps)
+            {
+                bodies.Add(JsonConvert.SerializeObject(model));
+            }
+
+            DatabaseConnection.InsertUnsentEvents(bodies);
         }
 
         private void SaveSaveUserProgressInDB(ProgressViewModel progressViewModel)

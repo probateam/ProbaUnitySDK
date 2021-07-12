@@ -35,65 +35,103 @@ namespace Proba
         /// <param name="body">json body</param>
         public static void InsertUnsentEvent(string className, string body)
         {
-            var unsentEvent = new EventDataScheme(_index++, className, body, DateTime.Now.ToString());
+            try
+            {
+                var unsentEvent = new EventDataScheme(_index++, className, body, DateTime.Now.ToString());
 
-            var fileStream = new FileStream(_path, FileMode.Append);
-            var streamWriter = new StreamWriter(fileStream);
-            var eventJason = JsonConvert.SerializeObject(unsentEvent);
+                var fileStream = new FileStream(_path, FileMode.Append);
+                var streamWriter = new StreamWriter(fileStream);
+                var eventJason = JsonConvert.SerializeObject(unsentEvent);
 
-            streamWriter.WriteLine(eventJason);
-            streamWriter.Flush();
+                streamWriter.WriteLine(eventJason);
+                streamWriter.Flush();
 
-            fileStream.Close();
+                fileStream.Close();
+            }
+            catch (IOException) { }
+        }
+
+
+        public static void InsertUnsentEvents(List<string> bodies)
+        {
+            try
+            {
+                var fileStream = new FileStream(_path, FileMode.Append);
+                var streamWriter = new StreamWriter(fileStream);
+
+                foreach (var body in bodies)
+                {
+                    var unsentEvent = new EventDataScheme(_index++, "EVENT", body, DateTime.Now.ToString());
+                    var eventJason = JsonConvert.SerializeObject(unsentEvent);
+                    streamWriter.WriteLine(eventJason);
+                }
+
+                streamWriter.Flush();
+                fileStream.Close();
+            }
+            catch (IOException) { }
         }
 
         /// <summary>Return all unsent events from table</summary>
         /// <returns>all events as DataTable<br /></returns>
         public static List<EventDataScheme> GetAllEvents()
         {
-
             var allEvents = new List<EventDataScheme>();
-
-            var fileStream = new FileStream(_path, FileMode.Open);
-            var streamReader = new StreamReader(fileStream);
-
-            string line;
-
-            for (var i = 0; i < PlayerPrefs.GetInt("ProbaDataLine"); i++)
+            try
             {
-                streamReader.ReadLine();
-            }
+                var fileStream = new FileStream(_path, FileMode.Open);
+                var streamReader = new StreamReader(fileStream);
 
-            while ((line = streamReader.ReadLine()) != null)
-            {
-                var data = JsonConvert.DeserializeObject<EventDataScheme>(line,
-                    new JsonSerializerSettings
-                    {
-                        CheckAdditionalContent = true
-                    });
-                allEvents.Add(data);
+                string line;
 
+                for (var i = 0; i < PlayerPrefs.GetInt("ProbaDataLine"); i++)
+                {
+                    streamReader.ReadLine();
+                }
+
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    var data = JsonConvert.DeserializeObject<EventDataScheme>(line,
+                        new JsonSerializerSettings
+                        {
+                            CheckAdditionalContent = true
+                        });
+                    allEvents.Add(data);
+
+                }
+                fileStream.Close();
             }
-            fileStream.Close();
+            catch (IOException) { }
 
             return allEvents;
+
         }
 
         /// <summary>Delete Oldest Event from DataBase </summary>
-        public static void DeleteFirstEvent()
+        public static void DeleteFirstEvent(int deleteNumber)
         {
-            PlayerPrefs.SetInt("ProbaDataLine", PlayerPrefs.GetInt("ProbaDataLine") + 1);
-            EmptyFile();
+            if (deleteNumber <= 0)
+                return;
+            try
+            {
+                PlayerPrefs.SetInt("ProbaDataLine", PlayerPrefs.GetInt("ProbaDataLine") + deleteNumber);
+                EmptyFile();
+            }
+            catch (IOException) { }
         }
 
 
         /// <summary>Flush whole DataBase</summary>
         public static void FlushDatabase()
         {
-            var fileStream = new FileStream(_path, FileMode.Create);
-            fileStream.Close();
-            _index = 0;
-            PlayerPrefs.SetInt("ProbaDataLine", 0);
+            try
+            {
+                var fileStream = new FileStream(_path, FileMode.Create);
+                fileStream.Close();
+                _index = 0;
+                PlayerPrefs.SetInt("ProbaDataLine", 0);
+            }
+            catch (IOException) { }
         }
 
         /// <summary>Returns the maximum identifier.</summary>
@@ -119,6 +157,7 @@ namespace Proba
                 {
                     streamReader.ReadLine();
                 }
+
                 var data = JsonConvert.DeserializeObject<EventDataScheme>(streamReader.ReadLine(),
                     new JsonSerializerSettings
                     {
@@ -132,19 +171,27 @@ namespace Proba
             {
                 return null;
             }
+            catch (IOException)
+            {
+                return null;
+            }
         }
 
         private static int FindIndex()
         {
-            var fileStream = new FileStream(_path, FileMode.Open);
-            var streamReader = new StreamReader(fileStream);
             var index = 0;
-
-            while ((streamReader.ReadLine()) != null)
+            try
             {
-                index++;
+                var fileStream = new FileStream(_path, FileMode.Open);
+                var streamReader = new StreamReader(fileStream);
+
+                while ((streamReader.ReadLine()) != null)
+                {
+                    index++;
+                }
+                fileStream.Close();
             }
-            fileStream.Close();
+            catch (IOException) { }
             return index;
         }
 
